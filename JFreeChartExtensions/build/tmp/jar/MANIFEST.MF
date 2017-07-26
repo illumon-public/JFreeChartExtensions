@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: Illumon Database
+Implementation-Version: 1.20170713.17beta
+Provider: gradle
+
