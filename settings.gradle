@@ -1,0 +1,4 @@
+
+include 'JFreeChartExtensions'
+
+rootProject.name='JFreeChartExtensions'

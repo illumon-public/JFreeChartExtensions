@@ -7,6 +7,16 @@ repositories {
 }
 // end::repositories[]
 
+// tag::sourceSets[]
+sourceSets {
+    main {
+        java {
+            srcDir 'java'
+        }
+    }
+}
+// end::sourceSets[]
+
 // tag::jar[]
 jar {
     baseName = 'jfreechartextensions'
