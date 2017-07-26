@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+// tag::repositories[]
+repositories {
+    mavenCentral()
+}
+// end::repositories[]
+
+// tag::jar[]
+jar {
+    baseName = 'jfreechartextensions'
+    version =  '0.1.0'
+}
+// end::jar[]
+
+// tag::dependencies[]
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//def depJFreeChart = 'jfreechart:jfreechart:1.0.19-antialiasing'
+def depJFreeChart = 'org.jfree:jfreechart:1.0.19'
+def depJFreeCommon = 'org.jfree:jcommon:1.0.23'
+
+dependencies {
+    compile depJFreeChart, depJFreeCommon
+    testCompile depJFreeChart, depJFreeCommon
+}
+// end::dependencies[]
+
+// tag::wrapper[]
+// end::wrapper[]
