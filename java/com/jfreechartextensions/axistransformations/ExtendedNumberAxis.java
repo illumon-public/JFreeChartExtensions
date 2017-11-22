@@ -418,17 +418,24 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                             lower -= this.getLowerMargin() * range;
                         }
                     } else {
-                        upper += Double.isNaN(this.maxRange) ? this.getUpperMargin() * range : 0;
-                        lower -= Double.isNaN(this.minRange) ? this.getLowerMargin() * range : 0;
-                    }
+                    applyMargin = true;
                 }
-
-                upper= transform.inverseTransform(upper);
-                lower= transform.inverseTransform(lower);
-
-
-                this.setRange(new Range(lower, upper), false, false);
             }
+
+            upper = this.transform.inverseTransform(upper);
+            lower = this.transform.inverseTransform(lower);
+            r = new Range(lower, upper);
+            if(applyMargin) {
+                double range2 = r.getUpperBound() - r.getLowerBound();
+
+                //if the range hasn't been manually set, apply a small margin
+                upper += Double.isNaN(this.maxRange)?this.getUpperMargin() * range2:0.0D;
+                lower -= Double.isNaN(this.minRange)?this.getLowerMargin() * range2:0.0D;
+
+            }
+
+            this.setRange(new Range(lower, upper), false, false);
+        }
 
         }
     }
