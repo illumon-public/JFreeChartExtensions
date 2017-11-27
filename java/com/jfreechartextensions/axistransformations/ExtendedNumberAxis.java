@@ -342,6 +342,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             if(plot instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot)plot;
                 Range r = vap.getDataRange(this);
+                boolean applyMargin = false;
                 if(r == null) {
                     r = this.getDefaultAutoRange();
                 }
