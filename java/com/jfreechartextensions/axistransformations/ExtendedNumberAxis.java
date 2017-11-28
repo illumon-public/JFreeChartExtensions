@@ -52,7 +52,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     public void setLowerBound(final double min) {
-        if(maxRange <= min) { throw new IllegalArgumentException("Lower bound=" + min + " can't be smaller than upper bound=" + maxRange); }
+        if(maxRange <= min) { throw new IllegalArgumentException("Lower bound=" + min + " can't be greater than upper bound=" + maxRange); }
         this.minRange = min;
         if(!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
             this.setRange(new Range(minRange, maxRange));
@@ -336,6 +336,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
 
     //transform specific redrawing
+    @Override
     protected void autoAdjustRange() {
         final Plot plot = this.getPlot();
         if(plot != null) {
@@ -434,6 +435,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         }
     }
 
+    @Override
     public double valueToJava2D(final double value, final Rectangle2D area, final RectangleEdge edge) {
         final Range range = this.getRange();
         final double tvalue = transform.isVisible(value) ? transform.transform(value) : value;
@@ -452,6 +454,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         return this.isInverted()?max - (tvalue - axisMin) / (axisMax - axisMin) * (max - min):min + (tvalue - axisMin) / (axisMax - axisMin) * (max - min);
     }
 
+    @Override
     public double java2DToValue(final double java2DValue, final Rectangle2D area, final RectangleEdge edge) {
         final Range range = this.getRange();
         final double axisMin = transform.transform(range.getLowerBound());
