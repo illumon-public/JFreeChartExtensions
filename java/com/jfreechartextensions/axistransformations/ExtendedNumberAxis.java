@@ -52,7 +52,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     public void setLowerBound(final double min) {
-        if(maxRange < min) { throw new IllegalArgumentException("Upper bound=" + maxRange + " can't be smaller than lower bound=" + minRange); }
+        if(maxRange <= min) { throw new IllegalArgumentException("Lower bound=" + min + " can't be smaller than upper bound=" + maxRange); }
         this.minRange = min;
         if(!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
             this.setRange(new Range(minRange, maxRange));
@@ -61,7 +61,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     public void setUpperBound(final double max) {
-        if(minRange > max) { throw new IllegalArgumentException("Upper bound=" + maxRange + " can't be smaller than lower bound=" + minRange); }
+        if(minRange >= max) { throw new IllegalArgumentException("Upper bound=" + max + " can't be smaller than lower bound=" + minRange); }
         this.maxRange = max;
         if(!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
             this.setRange(new Range(minRange, maxRange));
@@ -342,7 +342,6 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             if(plot instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot)plot;
                 Range r = vap.getDataRange(this);
-                boolean applyMargin = false;
                 if(r == null) {
                     r = this.getDefaultAutoRange();
                 }
@@ -406,37 +405,31 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                         }
                     }
 
-                    if(this.getAutoRangeStickyZero()) {
-                        if(upper <= 0.0D) {
+                    if (this.getAutoRangeStickyZero()) {
+                        if (upper <= 0.0D) {
                             upper = Math.min(0.0D, upper + this.getUpperMargin() * range);
                         } else {
                             upper += this.getUpperMargin() * range;
                         }
 
-                        if(lower >= 0.0D) {
+                        if (lower >= 0.0D) {
                             lower = Math.max(0.0D, lower - this.getLowerMargin() * range);
                         } else {
                             lower -= this.getLowerMargin() * range;
                         }
                     } else {
-                    applyMargin = true;
+                        upper += Double.isNaN(this.maxRange) ? this.getUpperMargin() * range : 0.0D;
+                        lower -= Double.isNaN(this.minRange) ? this.getLowerMargin() * range : 0.0D;
+                    }
+                }
+
+                upper = this.transform.inverseTransform(upper);
+                lower = this.transform.inverseTransform(lower);
+
+                if (!Double.isNaN(upper) && !Double.isNaN(lower)) {
+                    this.setRange(new Range(lower, upper), false, false);
                 }
             }
-
-            upper = this.transform.inverseTransform(upper);
-            lower = this.transform.inverseTransform(lower);
-            r = new Range(lower, upper);
-            if(applyMargin) {
-                double range2 = r.getUpperBound() - r.getLowerBound();
-
-                //if the range hasn't been manually set, apply a small margin
-                upper += Double.isNaN(this.maxRange)?this.getUpperMargin() * range2:0.0D;
-                lower -= Double.isNaN(this.minRange)?this.getLowerMargin() * range2:0.0D;
-
-            }
-
-            this.setRange(new Range(lower, upper), false, false);
-        }
 
         }
     }
@@ -481,5 +474,29 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         }
 
         return transform.inverseTransform(result);
+    }
+
+    @Override
+    public void zoomRange(double lowerPercent, double upperPercent) {
+        double lower = transform.transform(this.getRange().getLowerBound());
+        double upper = transform.transform(this.getRange().getUpperBound());
+        double length = upper - lower;
+        double r0;
+        double r1;
+        if(this.isInverted()) {
+            r0 = lower + length * (1.0D - upperPercent);
+            r1 = lower + length * (1.0D - lowerPercent);
+        } else {
+            r0 = lower + length * lowerPercent;
+            r1 = lower + length * upperPercent;
+        }
+
+        r0 = transform.inverseTransform(r0);
+        r1 = transform.inverseTransform(r1);
+
+        if(r1 > r0 && !java.lang.Double.isInfinite(r1 - r0)) {
+            this.setRange(new Range(r0, r1));
+        }
+
     }
 }
