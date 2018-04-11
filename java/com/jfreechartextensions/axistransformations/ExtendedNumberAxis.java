@@ -11,10 +11,7 @@ import org.jfree.ui.TextAnchor;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.function.Function;
+import java.util.*;
 
 public abstract class ExtendedNumberAxis extends NumberAxis {
 
@@ -131,11 +128,17 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     protected void selectAutoTickUnit(Graphics2D g2, Rectangle2D dataArea, RectangleEdge edge) {
-        //multiple passes makes the auto tick unit more accurate
-        for(int i = 0; i < 3; i++) {
-            double size1 = getTickUnit().getSize();
-            selectAutoTickUnitAux(g2, dataArea, edge);
-            if (size1 == getTickUnit().getSize()) {
+        Set<NumberTickUnit> units = new HashSet<>();//prevent looping
+        for(int i = 0; i < 3; ++i) {
+            NumberTickUnit size1 = this.getTickUnit();
+            this.selectAutoTickUnitAux(g2, dataArea, edge);
+            units.add(this.getTickUnit());
+            if(units.contains(size1)) {
+                if(units.size() > 1) {
+                    units.remove(size1);
+                    final NumberTickUnit size2 = units.iterator().next();
+                    setTickUnit(size1.getSize() > size2.getSize() ? size1 : size2);
+                }
                 return;
             }
         }
@@ -145,7 +148,6 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if(RectangleEdge.isTopOrBottom(edge)) {
             this.selectHorizontalAutoTickUnit(g2, dataArea, edge);
         } else if(RectangleEdge.isLeftOrRight(edge)) {
-            this.selectVerticalAutoTickUnit(g2, dataArea, edge);
             this.selectVerticalAutoTickUnit(g2, dataArea, edge);
         }
     }
