@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.function.Function;
 
 public abstract class ExtendedNumberAxis extends NumberAxis {
 
