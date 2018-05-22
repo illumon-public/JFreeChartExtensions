@@ -16,9 +16,6 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-/**
- * Created by devonallison on 5/22/18.
- */
 public interface ExtendedCategoryItemRenderer extends CategoryItemRenderer {
 
     void drawErrorBars(Graphics2D g2, CategoryItemRendererState state, Rectangle2D dataArea, CategoryPlot plot, ValueAxis rangeAxis, CategoryDataset dataset, int row, int column, double x, Paint errorBarColor);

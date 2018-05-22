@@ -15,9 +15,6 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-/**
- * Created by devonallison on 5/22/18.
- */
 public interface ExtendedXYItemRenderer extends XYItemRenderer {
 
     default void drawErrorBars(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataSeries, int series, int item, int pass, double seriesX, double startX, double endX, double seriesY, double startY, double endY, boolean drawXError, boolean drawYError, Paint color) {
