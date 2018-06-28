@@ -20,7 +20,7 @@ sourceSets {
 // tag::jar[]
 jar {
     baseName = 'jfreechartextensions'
-    version =  '0.1.3'
+    version =  '0.1.4'
 }
 // end::jar[]
 
