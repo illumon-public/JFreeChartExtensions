@@ -138,7 +138,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                 if(units.size() > 1) {
                     units.remove(size1);
                     final NumberTickUnit size2 = units.iterator().next();
-                    setTickUnit(size1.getSize() > size2.getSize() ? size1 : size2);
+                    setTickUnit(size1.getSize() > size2.getSize() ? size1 : size2, false, false);
                 }
                 return;
             }
