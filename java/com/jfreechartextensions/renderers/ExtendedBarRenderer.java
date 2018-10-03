@@ -25,12 +25,16 @@ public abstract class ExtendedBarRenderer extends BarRenderer implements Extende
         if (visibleRow >= 0) {
             Number dataValue = dataset.getValue(row, column);
             if (dataValue != null) {
+                RectangleEdge edge = plot.getRangeAxisEdge();
                 double value = dataValue.doubleValue();
+                //return if value is invisible
+                if(!Double.isFinite(rangeAxis.valueToJava2D(value, dataArea, edge))){
+                    return;
+                }
                 PlotOrientation orientation = plot.getOrientation();
                 double barW0 = this.calculateBarW0(plot, orientation, dataArea, domainAxis, state, visibleRow, column);
                 double[] barL0L1 = this.calculateBarL0L1(value);
                 if (barL0L1 != null) {
-                    RectangleEdge edge = plot.getRangeAxisEdge();
                     double transL0 = rangeAxis.valueToJava2D(barL0L1[0], dataArea, edge);
                     double transL1 = rangeAxis.valueToJava2D(barL0L1[1], dataArea, edge);
                     boolean positive = value >= this.getBase();
