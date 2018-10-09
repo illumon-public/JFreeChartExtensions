@@ -351,6 +351,12 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         return formatter == null ? getTickUnit().valueToString(tickValue) : formatter.format(tickValue);
     }
 
+    /**
+     * Checks whether the tickValue is valid to show
+     *
+     * @param tickValue - tick value to check
+     * @return boolean indicating whether the tick value is valid to show
+     */
     protected boolean okToPlotTick(final double tickValue) {
         return !Double.isNaN(tickValue) && contains(getRange(), tickValue) && transform.isVisible(tickValue);
     }
