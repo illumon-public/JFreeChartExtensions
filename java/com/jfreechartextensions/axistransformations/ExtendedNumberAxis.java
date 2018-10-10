@@ -136,7 +136,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             final double majorTickValue = majorTickCalculator.apply(i);
             final String tickLabel = formatLabel(majorTickValue);
 
-            if (okToPlotTick(majorTickValue)) {
+            if (okToPlotTick(majorTickValue, true)) {
                 result.add(createTick(TickType.MAJOR, edge, majorTickValue, tickLabel));
             }
 
@@ -240,7 +240,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         for (int i = 1; i < nMinorTicks; ++i) {
             final double minorTickValue = majorTickMin + i * dx;
 
-            if (okToPlotTick(minorTickValue)) {
+            if (okToPlotTick(minorTickValue, false)) {
                 result.add(createTick(TickType.MINOR, edge, minorTickValue, ""));
             }
         }
@@ -352,12 +352,13 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     }
 
     /**
-     * Checks whether the tickValue is valid to show
+     * Checks whether the tickValue is valid to draw
      *
      * @param tickValue - tick value to check
+     * @param isMajor   - whethe tick is major or minor
      * @return boolean indicating whether the tick value is valid to show
      */
-    protected boolean okToPlotTick(final double tickValue) {
+    protected boolean okToPlotTick(final double tickValue, final boolean isMajor) {
         return !Double.isNaN(tickValue) && contains(getRange(), tickValue) && transform.isVisible(tickValue);
     }
 
