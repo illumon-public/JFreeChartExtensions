@@ -43,8 +43,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if (dataRange == null) {
             if (this.getPlot() instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot) this.getPlot();
-                Range r = vap.getDataRange(this);
-                dataRange = r;
+                dataRange = vap.getDataRange(this);
             } else {
                 return null;
             }
@@ -355,7 +354,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
      * Checks whether the tickValue is valid to draw
      *
      * @param tickValue - tick value to check
-     * @param isMajor   - whethe tick is major or minor
+     * @param isMajor   - whether tick is major or minor
      * @return boolean indicating whether the tick value is valid to show
      */
     protected boolean okToPlotTick(final double tickValue, final boolean isMajor) {
@@ -374,30 +373,29 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if (plot != null) {
             if (plot instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot) plot;
-                Range r = vap.getDataRange(this);
-                dataRange = r;
-                if (r == null) {
-                    r = this.getDefaultAutoRange();
+                dataRange = vap.getDataRange(this);
+                if (dataRange == null) {
+                    dataRange = this.getDefaultAutoRange();
                 }
 
                 if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
                     throw new IllegalStateException("shouldn't happen");
                 } else if (!Double.isNaN(minRange)) {
-                    if (minRange > r.getUpperBound()) {
-                        r = new Range(minRange, minRange + 1);
+                    if (minRange > dataRange.getUpperBound()) {
+                        dataRange = new Range(minRange, minRange + 1);
                     } else {
-                        r = new Range(minRange, r.getUpperBound());
+                        dataRange = new Range(minRange, dataRange.getUpperBound());
                     }
                 } else if (!Double.isNaN(maxRange)) {
-                    if (maxRange < r.getLowerBound()) {
-                        r = new Range(maxRange - 1, maxRange);
+                    if (maxRange < dataRange.getLowerBound()) {
+                        dataRange = new Range(maxRange - 1, maxRange);
                     } else {
-                        r = new Range(r.getLowerBound(), maxRange);
+                        dataRange = new Range(dataRange.getLowerBound(), maxRange);
                     }
                 }
 
-                double upper = transform.transform(r.getUpperBound());
-                double lower = transform.transform(r.getLowerBound());
+                double upper = transform.transform(dataRange.getUpperBound());
+                double lower = transform.transform(dataRange.getLowerBound());
 
                 if (this.getRangeType() == RangeType.POSITIVE) {
                     lower = Math.max(0.0D, lower);
