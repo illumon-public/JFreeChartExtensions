@@ -32,7 +32,7 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
             RectangleEdge location = plot.getRangeAxisEdge();
             double value = dataValue.doubleValue();
             //return if value is invisible
-            if(Double.isNaN(rangeAxis.valueToJava2D(value, dataArea, location))){
+            if(!Double.isFinite(rangeAxis.valueToJava2D(value, dataArea, location))){
                 return;
             }
             Comparable group = this.seriesToGroupMap.getGroup(dataset.getRowKey(row));

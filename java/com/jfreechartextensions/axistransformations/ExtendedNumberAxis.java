@@ -163,11 +163,13 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         TickUnitSource tickUnits = this.getStandardTickUnits();
         TickUnit unit1 = tickUnits.getCeilingTickUnit(this.getTickUnit());
 
+        final Range range = getRange();
+
         //Smallest tick distance could be at either end
-        final double unitHeightUpper = Math.abs(this.lengthToJava2D(Math.abs(getRange().getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getUpperBound() - unit1.getSize()),
+        final double unitHeightUpper = Math.abs(this.lengthToJava2D(Math.abs(range.getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getUpperBound() - unit1.getSize()),
                 dataArea,
                 edge));
-        final double unitHeightLower = Math.abs(this.lengthToJava2D(Math.abs(getRange().getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getLowerBound() + unit1.getSize()),
+        final double unitHeightLower = Math.abs(this.lengthToJava2D(Math.abs(range.getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getLowerBound() + unit1.getSize()),
                 dataArea, edge));
         double unitHeight = Math.min(unitHeightLower, unitHeightUpper);
 
@@ -178,9 +180,9 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(Math.abs(getRange().getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getUpperBound() - unit2.getSize()),
+        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(Math.abs(range.getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getUpperBound() - unit2.getSize()),
                 dataArea, edge));
-        final double unit2HeightLower = Math.abs(this.lengthToJava2D(Math.abs(getRange().getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getLowerBound() + unit2.getSize()),
+        final double unit2HeightLower = Math.abs(this.lengthToJava2D(Math.abs(range.getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getLowerBound() + unit2.getSize()),
                 dataArea, edge));
         final double unit2Height = Math.min(unit2HeightLower, unit2HeightUpper);
 
@@ -199,11 +201,13 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         TickUnitSource tickUnits = this.getStandardTickUnits();
         TickUnit unit1 = tickUnits.getCeilingTickUnit(this.getTickUnit());
 
+        final Range range = getRange();
+
         //if transform
-        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(Math.abs(getRange().getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getUpperBound() - unit1.getSize()),
+        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(Math.abs(range.getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getUpperBound() - unit1.getSize()),
                 dataArea,
                 edge));
-        final double unit1WidthLower = Math.abs(this.lengthToJava2D(Math.abs(getRange().getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getLowerBound() + unit1.getSize()),
+        final double unit1WidthLower = Math.abs(this.lengthToJava2D(Math.abs(range.getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getLowerBound() + unit1.getSize()),
                 dataArea, edge));
         double unit1Width = Math.min(unit1WidthLower, unit1WidthUpper);
         if (Math.abs(unit1Width) < SMALLEST_DOUBLE) {
@@ -212,9 +216,9 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final double guess = tickLabelWidth / unit1Width * unit1.getSize();
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(Math.abs(getRange().getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getUpperBound() - unit2.getSize()),
+        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(Math.abs(range.getUpperBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getUpperBound() - unit2.getSize()),
                 dataArea, edge));
-        final double unit2WidthLower = Math.abs(this.lengthToJava2D(Math.abs(getRange().getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(getRange().getLowerBound() + unit2.getSize()),
+        final double unit2WidthLower = Math.abs(this.lengthToJava2D(Math.abs(range.getLowerBound()), dataArea, edge) - this.lengthToJava2D(Math.abs(range.getLowerBound() + unit2.getSize()),
                 dataArea, edge));
         final double unit2Width = Math.min(unit2WidthLower, unit2WidthUpper);
 
@@ -383,7 +387,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                 double upper = transform.transform(r.getUpperBound());
                 double lower = transform.transform(r.getLowerBound());
 
-                if(this.getRangeType() == RangeType.POSITIVE) {
+                if (this.getRangeType() == RangeType.POSITIVE) {
                     lower = Math.max(0.0D, lower);
                     upper = Math.max(0.0D, upper);
                 } else if (this.getRangeType() == RangeType.NEGATIVE) {
@@ -538,19 +542,18 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
      * Converts a length in data coordinates into the corresponding length in
      * Java2D coordinates by handling AxisTransformations.
      *
-     * @param length  the length.
-     * @param area  the plot area.
-     * @param edge  the edge along which the axis lies.
-     *
+     * @param length the length.
+     * @param area   the plot area.
+     * @param edge   the edge along which the axis lies.
      * @return The length in Java2D coordinates.
      */
     @Override
     public double lengthToJava2D(double length, Rectangle2D area,
                                  RectangleEdge edge) {
         double zero = valueToJava2D(0.0, area, edge);
-        zero = Double.isNaN(zero) ? 0.0D : zero;
+        zero = Double.isFinite(zero) ? zero : 0.0;
         double l = valueToJava2D(length, area, edge);
-        l = Double.isNaN(l) ? length : l;
+        l = Double.isFinite(l) ? l : length;
         return Math.abs(l - zero);
     }
 }

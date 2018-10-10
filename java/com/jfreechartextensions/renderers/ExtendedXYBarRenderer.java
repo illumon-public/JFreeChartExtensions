@@ -58,7 +58,7 @@ public abstract class ExtendedXYBarRenderer extends XYBarRenderer {
 
                 double xValue = intervalDataset.getXValue(series, item);
                 //return if x-value is invisible
-                if (!Double.isFinite(xValue)) {
+                if (Double.isNaN(xValue)) {
                     return;
                 }
 
@@ -140,11 +140,11 @@ public abstract class ExtendedXYBarRenderer extends XYBarRenderer {
                         double y1 = dataset.getYValue(series, item);
                         double transX1 = domainAxis.valueToJava2D(x11, dataArea, location1);
                         //If transX1 is invisible (which would be very rare as x11 is most of the times x-Value, and execution has come to this point which means that actual x-value is visible
-                        transX1 = Double.isNaN(transX1) ? domainAxis.valueToJava2D(xValue, dataArea, location1) : transX1;
+                        transX1 = !Double.isFinite(transX1) ? domainAxis.valueToJava2D(xValue, dataArea, location1) : transX1;
 
                         double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
                         //return if y-value is invisible
-                        if (Double.isNaN(transY1)) {
+                        if (!Double.isFinite(transY1)) {
                             return;
                         }
                         int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);

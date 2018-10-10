@@ -22,16 +22,13 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
     /**
      * Stores the index of last visible point for every series
      */
-    private int[][] isVisible;
+    private int[] isVisible;
 
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         XYAreaRendererState state = new XYAreaRendererState(info);
         state.setProcessVisibleItemsOnly(false);
-        isVisible = new int[data.getSeriesCount()][];
-        for (int i = 0; i < data.getSeriesCount(); i++) {
-            isVisible[i] = new int[1];
-        }
+        isVisible = new int[data.getSeriesCount()];
         return state;
     }
 
@@ -56,8 +53,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
             if (currentPointVisible) {
                 //update the previous visible point for series
-                final int[] visibles = isVisible[series];
-                visibles[0] = item;
+                isVisible[series] = item;
             }
 
             int itemCount = dataset.getItemCount(series);
@@ -74,7 +70,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
             if (!Double.isFinite(transX0) || !Double.isFinite(transY0)) {
                 //find previous visible point
-                previousVisibleIndex = isVisible[series][0];
+                previousVisibleIndex = isVisible[series];
                 transX0 = domainAxis.valueToJava2D(dataset.getXValue(series, previousVisibleIndex), dataArea, plot.getDomainAxisEdge());
                 transY0 = rangeAxis.valueToJava2D(dataset.getYValue(series, previousVisibleIndex), dataArea, plot.getRangeAxisEdge());
             }
@@ -186,7 +182,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
                 }
                 //adding point to the collection to show tooltip when hover
                 final EntityCollection entityCollection = state.getEntityCollection();
-                if(entityCollection != null){
+                if (entityCollection != null) {
                     this.addEntity(entityCollection, shape, dataset, series, item, 0.0D, 0.0D);
                 }
                 g2.draw(shape);

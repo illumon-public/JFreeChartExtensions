@@ -42,7 +42,7 @@ public abstract class ExtendedLineAndShapeRenderer extends LineAndShapeRenderer 
                         double value = v.doubleValue();
                         double y1 = rangeAxis.valueToJava2D(value, dataArea, plot.getRangeAxisEdge());
                         //return if current point is not visible
-                        if(Double.isNaN(y1)){
+                        if(!Double.isFinite(y1)){
                             return;
                         }
                         if(pass == 0 && this.getItemLineVisible(row, column) && column != 0) {
@@ -59,7 +59,7 @@ public abstract class ExtendedLineAndShapeRenderer extends LineAndShapeRenderer 
                                 double y0 = rangeAxis.valueToJava2D(datasetIndex, dataArea, plot.getRangeAxisEdge());
                                 //return if previous point is not visible.
                                 // With this implementation, if there is any invisible point between two visible points, then there WON'T be line drawn between visible points.
-                                if(Double.isNaN(y0)){
+                                if(!Double.isFinite(y0)){
                                     return;
                                 }
                                 Line2D.Double line = null;
