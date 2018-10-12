@@ -29,10 +29,16 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
     public void drawItem(Graphics2D g2, CategoryItemRendererState state, Rectangle2D dataArea, CategoryPlot plot, CategoryAxis domainAxis, ValueAxis rangeAxis, CategoryDataset dataset, int row, int column, int pass) {
         Number dataValue = dataset.getValue(row, column);
         if(dataValue != null) {
+            RectangleEdge location = plot.getRangeAxisEdge();
             double value = dataValue.doubleValue();
+            //return if value is invisible
+            if(!Double.isFinite(rangeAxis.valueToJava2D(value, dataArea, location))){
+                return;
+            }
             Comparable group = this.seriesToGroupMap.getGroup(dataset.getRowKey(row));
             PlotOrientation orientation = plot.getOrientation();
             double barW0 = this.calculateBarW0(plot, orientation, dataArea, domainAxis, state, row, column);
+
             double positiveBase = 0.0D;
             double negativeBase = 0.0D;
 
@@ -66,10 +72,12 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
                 barBase = RectangleEdge.BOTTOM;
             }
 
-            RectangleEdge location = plot.getRangeAxisEdge();
             double var37;
             if(value > 0.0D) {
                 var37 = rangeAxis.valueToJava2D(positiveBase, dataArea, location);
+                //To prevent log transformation to process 0 as bar base
+                var37 = Double.isFinite(var37) ? var37 : rangeAxis.valueToJava2D(rangeAxis.getLowerBound(), dataArea, location);
+
                 translatedValue = rangeAxis.valueToJava2D(positiveBase + value, dataArea, location);
             } else {
                 var37 = rangeAxis.valueToJava2D(negativeBase, dataArea, location);

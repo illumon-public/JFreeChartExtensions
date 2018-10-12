@@ -38,8 +38,17 @@ public interface ExtendedXYItemRenderer extends XYItemRenderer {
                 x = seriesY;
                 edge = plot.getDomainAxisEdge();
                 yy0 = domainAxis.valueToJava2D(y0, dataArea, edge);
+                if (!Double.isFinite(yy0)) {
+                    return;
+                }
                 yy1 = domainAxis.valueToJava2D(y1, dataArea, edge);
+                if (!Double.isFinite(yy1)) {
+                    return;
+                }
                 xx = rangeAxis.valueToJava2D(x, dataArea, plot.getRangeAxisEdge());
+                if (!Double.isFinite(xx)) {
+                    return;
+                }
                 adj = capLength / 2.0D;
                 if (orientation == PlotOrientation.VERTICAL) {
                     line = new Line2D.Double(yy0, xx, yy1, xx);
@@ -65,8 +74,17 @@ public interface ExtendedXYItemRenderer extends XYItemRenderer {
                 x = seriesX;
                 edge = plot.getRangeAxisEdge();
                 yy0 = rangeAxis.valueToJava2D(y0, dataArea, edge);
+                if (!Double.isFinite(yy0)) {
+                    return;
+                }
                 yy1 = rangeAxis.valueToJava2D(y1, dataArea, edge);
+                if (!Double.isFinite(yy1)) {
+                    return;
+                }
                 xx = domainAxis.valueToJava2D(x, dataArea, plot.getDomainAxisEdge());
+                if (!Double.isFinite(xx)) {
+                    return;
+                }
                 adj = capLength / 2.0D;
                 if (orientation == PlotOrientation.VERTICAL) {
                     line = new Line2D.Double(xx, yy0, xx, yy1);

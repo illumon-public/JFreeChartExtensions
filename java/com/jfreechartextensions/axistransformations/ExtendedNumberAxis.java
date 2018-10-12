@@ -200,9 +200,11 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         TickUnitSource tickUnits = this.getStandardTickUnits();
         TickUnit unit1 = tickUnits.getCeilingTickUnit(this.getTickUnit());
 
+        final Range range = getRange();
+
         //Smallest tick distance could be at either end
-        final double unitHeightUpper = Math.abs(this.lengthToJava2D(getRange().getUpperBound(), dataArea, edge) - this.lengthToJava2D(getRange().getUpperBound() - unit1.getSize(), dataArea, edge));
-        final double unitHeightLower = Math.abs(this.lengthToJava2D(getRange().getLowerBound(), dataArea, edge) - this.lengthToJava2D(getRange().getLowerBound() + unit1.getSize(), dataArea, edge));
+        final double unitHeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
+        final double unitHeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
         double unitHeight = Math.min(unitHeightLower, unitHeightUpper);
 
         double guess = unit1.getSize();
@@ -212,8 +214,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(getRange().getUpperBound(), dataArea, edge) - this.lengthToJava2D(getRange().getUpperBound() - unit2.getSize(), dataArea, edge));
-        final double unit2HeightLower = Math.abs(this.lengthToJava2D(getRange().getLowerBound(), dataArea, edge) - this.lengthToJava2D(getRange().getLowerBound() + unit2.getSize(), dataArea, edge));
+        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
+        final double unit2HeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
         final double unit2Height = Math.min(unit2HeightLower, unit2HeightUpper);
 
         tickLabelHeight = this.estimateMaximumTickLabelHeight(g2);
@@ -231,9 +233,11 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         TickUnitSource tickUnits = this.getStandardTickUnits();
         TickUnit unit1 = tickUnits.getCeilingTickUnit(this.getTickUnit());
 
+        final Range range = getRange();
+
         //if transform
-        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(getRange().getUpperBound(), dataArea, edge) - this.lengthToJava2D(getRange().getUpperBound() - unit1.getSize(), dataArea, edge));
-        final double unit1WidthLower = Math.abs(this.lengthToJava2D(getRange().getLowerBound(), dataArea, edge) - this.lengthToJava2D(getRange().getLowerBound() + unit1.getSize(), dataArea, edge));
+        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
+        final double unit1WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
         double unit1Width = Math.min(unit1WidthLower, unit1WidthUpper);
         if (Math.abs(unit1Width) < SMALLEST_DOUBLE) {
             unit1Width = SMALLEST_DOUBLE;
@@ -241,8 +245,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final double guess = tickLabelWidth / unit1Width * unit1.getSize();
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(getRange().getUpperBound(), dataArea, edge) - this.lengthToJava2D(getRange().getUpperBound() - unit2.getSize(), dataArea, edge));
-        final double unit2WidthLower = Math.abs(this.lengthToJava2D(getRange().getLowerBound(), dataArea, edge) - this.lengthToJava2D(getRange().getLowerBound() + unit2.getSize(), dataArea, edge));
+        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
+        final double unit2WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
         final double unit2Width = Math.min(unit2WidthLower, unit2WidthUpper);
 
         tickLabelWidth = this.estimateMaximumTickLabelWidth(g2, unit2);
@@ -429,7 +433,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                     lower = upper - fixedAutoRange;
                 } else {
                     final double minRange = this.getAutoRangeMinimumSize();
-                    if (range < minRange) {
+                    if (Math.abs(range) < minRange) {
                         final double expand = (minRange - range) / 2.0D;
                         upper += expand;
                         lower -= expand;
@@ -472,7 +476,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                 lower = this.transform.inverseTransform(lower);
 
                 if (!Double.isNaN(upper) && !Double.isNaN(lower)) {
-                    this.setRange(new Range(lower, upper), false, false);
+                    //as lower and upper may not include r.getLowerBound() and r.getUpperBound()
+                    this.setRange(new Range(Math.min(lower, r.getLowerBound()), Math.max(upper, r.getUpperBound())), false, false);
                 }
             }
 
@@ -482,9 +487,15 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     @Override
     public double valueToJava2D(final double value, final Rectangle2D area, final RectangleEdge edge) {
         final Range range = this.getRange();
-        final double tvalue = transform.isVisible(value) ? transform.transform(value) : value;
-        final double axisMin = transform.transform(range.getLowerBound());
-        final double axisMax = transform.transform(range.getUpperBound());
+        if (!transform.isVisible(value)) {
+            return Double.NaN;
+        }
+        final double transformedValue = transform.transform(value);
+        final double transformedMin = transform.transform(range.getLowerBound());
+        final double transformedMax = transform.transform(range.getUpperBound());
+        if (transformedMin > transformedMax && !this.isInverted()) {
+            this.setInverted(true);
+        }
         double min = 0.0D;
         double max = 0.0D;
         if (RectangleEdge.isTopOrBottom(edge)) {
@@ -495,14 +506,17 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             min = area.getMaxY();
         }
 
-        return this.isInverted() ? max - (tvalue - axisMin) / (axisMax - axisMin) * (max - min) : min + (tvalue - axisMin) / (axisMax - axisMin) * (max - min);
+        return this.isInverted() ? max - (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min) : min + (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
     }
 
     @Override
     public double java2DToValue(final double java2DValue, final Rectangle2D area, final RectangleEdge edge) {
         final Range range = this.getRange();
-        final double axisMin = transform.transform(range.getLowerBound());
-        final double axisMax = transform.transform(range.getUpperBound());
+        final double transformedMin = transform.transform(range.getLowerBound());
+        final double transformedMax = transform.transform(range.getUpperBound());
+        if (transformedMin > transformedMax && !this.isInverted()) {
+            this.setInverted(true);
+        }
         double min = 0.0D;
         double max = 0.0D;
         if (RectangleEdge.isTopOrBottom(edge)) {
@@ -515,9 +529,9 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
         double result;
         if (this.isInverted()) {
-            result = axisMax - (java2DValue - min) / (max - min) * (axisMax - axisMin);
+            result = transformedMax - (java2DValue - min) / (max - min) * (transformedMax - transformedMin);
         } else {
-            result = axisMin + (java2DValue - min) / (max - min) * (axisMax - axisMin);
+            result = transformedMin + (java2DValue - min) / (max - min) * (transformedMax - transformedMin);
         }
 
         return transform.inverseTransform(result);
@@ -525,17 +539,21 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     public void zoomRange(double lowerPercent, double upperPercent) {
-        double lower = transform.transform(this.getRange().getLowerBound());
-        double upper = transform.transform(this.getRange().getUpperBound());
-        double length = upper - lower;
+        final Range range = this.getRange();
+        double transformedLower = transform.transform(range.getLowerBound());
+        double transformedUpper = transform.transform(range.getUpperBound());
+        if (transformedLower > transformedUpper && !this.isInverted()) {
+            this.setInverted(true);
+        }
+        double length = Math.abs(transformedUpper - transformedLower);
         double r0;
         double r1;
         if (this.isInverted()) {
-            r0 = lower + length * (1.0D - upperPercent);
-            r1 = lower + length * (1.0D - lowerPercent);
+            r0 = transformedLower + length * (1.0D - upperPercent);
+            r1 = transformedLower + length * (1.0D - lowerPercent);
         } else {
-            r0 = lower + length * lowerPercent;
-            r1 = lower + length * upperPercent;
+            r0 = transformedLower + length * lowerPercent;
+            r1 = transformedLower + length * upperPercent;
         }
 
         r0 = transform.inverseTransform(r0);
@@ -545,5 +563,25 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             this.setRange(new Range(r0, r1));
         }
 
+    }
+
+
+    /**
+     * Converts a length in data coordinates into the corresponding length in
+     * Java2D coordinates by handling AxisTransformations.
+     *
+     * @param length the length.
+     * @param area   the plot area.
+     * @param edge   the edge along which the axis lies.
+     * @return The length in Java2D coordinates.
+     */
+    @Override
+    public double lengthToJava2D(double length, Rectangle2D area,
+                                 RectangleEdge edge) {
+        double zero = valueToJava2D(0.0, area, edge);
+        zero = Double.isFinite(zero) ? zero : 0.0;
+        double l = valueToJava2D(length, area, edge);
+        l = Double.isFinite(l) ? l : length;
+        return Math.abs(l - zero);
     }
 }
