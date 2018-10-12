@@ -390,13 +390,13 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                     upper = Math.max(upper, 0.0D);
                 }
 
-                final double range = Math.abs(upper - lower);
+                final double range = upper - lower;
                 final double fixedAutoRange = this.getFixedAutoRange();
                 if (fixedAutoRange > 0.0D) {
                     lower = upper - fixedAutoRange;
                 } else {
                     final double minRange = this.getAutoRangeMinimumSize();
-                    if (range < minRange) {
+                    if (Math.abs(range) < minRange) {
                         final double expand = (minRange - range) / 2.0D;
                         upper += expand;
                         lower -= expand;
