@@ -477,7 +477,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
                 if (!Double.isNaN(upper) && !Double.isNaN(lower)) {
                     //as lower and upper may not include r.getLowerBound() and r.getUpperBound()
-                    this.setRange(new Range(Math.min(lower, r.getLowerBound()), Math.max(upper, r.getUpperBound())), false, false);
+                    this.setRange(new Range(Math.min(lower, dataRange.getLowerBound()), Math.max(upper, dataRange.getUpperBound())), false, false);
                 }
             }
 
