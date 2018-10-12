@@ -502,8 +502,9 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     @Override
     public void zoomRange(double lowerPercent, double upperPercent) {
-        double transformedLower = transform.transform(this.getRange().getLowerBound());
-        double transformedUpper = transform.transform(this.getRange().getUpperBound());
+        final Range range = this.getRange();
+        double transformedLower = transform.transform(range.getLowerBound());
+        double transformedUpper = transform.transform(range.getUpperBound());
         if (transformedLower > transformedUpper && !this.isInverted()) {
             this.setInverted(true);
         }
