@@ -38,7 +38,13 @@ public interface ExtendedCategoryItemRenderer extends CategoryItemRenderer {
         if (visibleRow >= 0) {
             edge = plot.getRangeAxisEdge();
             yy0 = rangeAxis.valueToJava2D(y0, dataArea, edge);
+            if (!Double.isFinite(yy0)) {
+                return;
+            }
             yy1 = rangeAxis.valueToJava2D(y1, dataArea, edge);
+            if (!Double.isFinite(yy1)) {
+                return;
+            }
             adj = capLength / 2.0D;
             if (orientation == PlotOrientation.VERTICAL) {
                 line = new Line2D.Double(x, yy0, x, yy1);
