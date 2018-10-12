@@ -370,7 +370,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         return formatter == null ? getTickUnit().valueToString(tickValue) : formatter.format(tickValue);
     }
 
-    protected boolean okToPlotTick(final double tickValue) {
+    private boolean okToPlotTick(final double tickValue) {
         return !Double.isNaN(tickValue) && contains(getRange(), tickValue) && transform.isVisible(tickValue);
     }
 
