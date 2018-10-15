@@ -563,6 +563,10 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             min = area.getMaxY();
         }
 
-        return this.isInverted() ? max - (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min) : min + (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
+        if (this.isInverted()) {
+            return max - (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
+        } else {
+            return min + (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
+        }
     }
 }
