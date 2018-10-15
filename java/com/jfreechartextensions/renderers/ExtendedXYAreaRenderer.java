@@ -252,6 +252,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
                 }
             }
 
+            PlotOrientation orientation = plot.getOrientation();
             int datasetIndex = plot.indexOf(dataset);
             updateCrosshairValues(crosshairState, x1, y1, datasetIndex,
                     transX1, transY1, orientation);

@@ -149,7 +149,7 @@ public abstract class ExtendedXYBarRenderer extends XYBarRenderer {
                         }
 
                         int datasetIndex = plot.indexOf(dataset);
-                        updateCrosshairValues(crosshairState, x1, y1, datasetIndex,
+                        updateCrosshairValues(crosshairState, x11, y1, datasetIndex,
                                 transX1, transY1, plot.getOrientation());
 
                         EntityCollection entities = state.getEntityCollection();

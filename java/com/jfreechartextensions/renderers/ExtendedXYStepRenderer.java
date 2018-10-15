@@ -28,10 +28,12 @@ public class ExtendedXYStepRenderer extends XYStepRenderer {
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         final XYItemRendererState state = super.initialise(g2, dataArea, plot, data, info);
-        lastVisibles = new int[data.getSeriesCount()];
+
+        lastVisibles = new int[state.getDataset().getSeriesCount()];
         for (int i = 0; i < data.getSeriesCount(); i++) {
             lastVisibles[i] = -1;
         }
+
         return state;
     }
 
@@ -120,9 +122,8 @@ public class ExtendedXYStepRenderer extends XYStepRenderer {
                     }
 
                     // submit this data item as a candidate for the crosshair point
-                    int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
-                    int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
-                    updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex, rangeAxisIndex, transX1, transY1, orientation);
+                    int datasetIndex = plot.indexOf(dataset);
+                    updateCrosshairValues(crosshairState, x1, y1, datasetIndex, transX1, transY1, orientation);
                 } else {
                     //set current index as last visible index
                     lastVisibles[series] = item;
