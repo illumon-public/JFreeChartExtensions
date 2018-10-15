@@ -453,23 +453,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if (!transform.isVisible(value)) {
             return Double.NaN;
         }
-        final double transformedValue = transform.transform(value);
-        final double transformedMin = transform.transform(range.getLowerBound());
-        final double transformedMax = transform.transform(range.getUpperBound());
-        if (transformedMin > transformedMax && !this.isInverted()) {
-            this.setInverted(true);
-        }
-        double min = 0.0D;
-        double max = 0.0D;
-        if (RectangleEdge.isTopOrBottom(edge)) {
-            min = area.getX();
-            max = area.getMaxX();
-        } else if (RectangleEdge.isLeftOrRight(edge)) {
-            max = area.getMinY();
-            min = area.getMaxY();
-        }
-
-        return this.isInverted() ? max - (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min) : min + (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
+        return computeValueToJava2D(value, area, edge, range);
     }
 
     @Override
@@ -541,10 +525,44 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     @Override
     public double lengthToJava2D(double length, Rectangle2D area,
                                  RectangleEdge edge) {
+        final Range range = getRange();
         double zero = valueToJava2D(0.0, area, edge);
-        zero = Double.isFinite(zero) ? zero : 0.0;
+        zero = Double.isFinite(zero) ? zero : computeValueToJava2D(0.0, area, edge, range);
         double l = valueToJava2D(length, area, edge);
-        l = Double.isFinite(l) ? l : length;
+        l = Double.isFinite(l) ? l : computeValueToJava2D(length, area, edge, range);
         return Math.abs(l - zero);
+    }
+
+    /**
+     * Converts a data value to a coordinate in Java2D space, assuming that the
+     * axis runs along one edge of the specified dataArea. This function handles axis transformation.
+     * <p>
+     * Note that it is possible for the coordinate to fall outside the plotArea.
+     *
+     * @param value the data value.
+     * @param area  the area for plotting the data.
+     * @param edge  the axis location.
+     * @param range the axis range.
+     * @return The Java2D coordinate.
+     * @see #java2DToValue(double, Rectangle2D, RectangleEdge)
+     */
+    private double computeValueToJava2D(final double value, final Rectangle2D area, final RectangleEdge edge, final Range range) {
+        final double transformedValue = transform.isVisible(value) ? transform.transform(value) : value;
+        final double transformedMin = transform.transform(range.getLowerBound());
+        final double transformedMax = transform.transform(range.getUpperBound());
+        if (transformedMin > transformedMax && !this.isInverted()) {
+            this.setInverted(true);
+        }
+        double min = 0.0D;
+        double max = 0.0D;
+        if (RectangleEdge.isTopOrBottom(edge)) {
+            min = area.getX();
+            max = area.getMaxX();
+        } else if (RectangleEdge.isLeftOrRight(edge)) {
+            max = area.getMinY();
+            min = area.getMaxY();
+        }
+
+        return this.isInverted() ? max - (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min) : min + (transformedValue - transformedMin) / (transformedMax - transformedMin) * (max - min);
     }
 }
