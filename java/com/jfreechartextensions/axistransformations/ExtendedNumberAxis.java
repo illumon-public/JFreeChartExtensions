@@ -19,6 +19,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     private static final long serialVersionUID = 3021139144251111579L;
     private BasicAxisTransform transform;
     private double[] majorTicks;
+    private Range dataRange;
     private double tickAngle = Double.NaN;
     private double minRange = Double.NaN;
     private double maxRange = Double.NaN;
@@ -34,6 +35,22 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         this.transform = transform == null ? newNullAxisTransform() : transform;
     }
 
+    public BasicAxisTransform getTransform() {
+        return transform;
+    }
+
+    public Range getDataRange() {
+        if (dataRange == null) {
+            if (this.getPlot() instanceof ValueAxisPlot) {
+                final ValueAxisPlot vap = (ValueAxisPlot) this.getPlot();
+                dataRange = vap.getDataRange(this);
+            } else {
+                return null;
+            }
+        }
+        return dataRange;
+    }
+
     public void setMajorTicks(final double[] tickLocations) {
         if (tickLocations == null || tickLocations.length == 0) {
             this.majorTicks = null;
@@ -46,6 +63,14 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
     public void setTickLabelAngle(final double angle) {
         this.tickAngle = Double.isInfinite(angle) ? Double.NaN : angle * Math.PI / 180 % (2 * Math.PI);
+    }
+
+    protected double getMinRange() {
+        return minRange;
+    }
+
+    protected double getMaxRange() {
+        return maxRange;
     }
 
     @Override
@@ -119,7 +144,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             final String tickLabel = formatLabel(majorTickValue);
 
             if (okToPlotTick(majorTickValue)) {
-                result.add(createTick(TickType.MAJOR, edge, majorTickValue, tickLabel));
+                result.add(createTick(TickType.MAJOR, edge, majorTickValue, isTickLabelVisible(majorTickValue, true) ? tickLabel : ""));
             }
 
             final double nextMajorTickValue = majorTickCalculator.apply(i + 1);
@@ -129,6 +154,18 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         addMinorTicks(result, nMinorTicks, majorTickCalculator.apply(nMajorTicks - 1), majorTickCalculator.apply(nMajorTicks), edge);
 
         return result;
+    }
+
+
+    /**
+     * Checks whether the tickLabel is valid to show.
+     *
+     * @param tickValue - tick value to check
+     * @param isMajor   - whether tick is major or minor
+     * @return boolean indicating whether the tick label is valid to show
+     */
+    protected boolean isTickLabelVisible(final double tickValue, final boolean isMajor) {
+        return isMajor;
     }
 
     @Override
@@ -353,29 +390,29 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if (plot != null) {
             if (plot instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot) plot;
-                Range r = vap.getDataRange(this);
-                if (r == null) {
-                    r = this.getDefaultAutoRange();
+                dataRange = vap.getDataRange(this);
+                if (dataRange == null) {
+                    dataRange = this.getDefaultAutoRange();
                 }
 
                 if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
                     throw new IllegalStateException("shouldn't happen");
                 } else if (!Double.isNaN(minRange)) {
-                    if (minRange > r.getUpperBound()) {
-                        r = new Range(minRange, minRange + 1);
+                    if (minRange > dataRange.getUpperBound()) {
+                        dataRange = new Range(minRange, minRange + 1);
                     } else {
-                        r = new Range(minRange, r.getUpperBound());
+                        dataRange = new Range(minRange, dataRange.getUpperBound());
                     }
                 } else if (!Double.isNaN(maxRange)) {
-                    if (maxRange < r.getLowerBound()) {
-                        r = new Range(maxRange - 1, maxRange);
+                    if (maxRange < dataRange.getLowerBound()) {
+                        dataRange = new Range(maxRange - 1, maxRange);
                     } else {
-                        r = new Range(r.getLowerBound(), maxRange);
+                        dataRange = new Range(dataRange.getLowerBound(), maxRange);
                     }
                 }
 
-                double upper = transform.transform(r.getUpperBound());
-                double lower = transform.transform(r.getLowerBound());
+                double upper = transform.transform(dataRange.getUpperBound());
+                double lower = transform.transform(dataRange.getLowerBound());
 
                 if (this.getRangeType() == RangeType.POSITIVE) {
                     lower = Math.max(0.0D, lower);
@@ -440,7 +477,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
                 if (!Double.isNaN(upper) && !Double.isNaN(lower)) {
                     //as lower and upper may not include r.getLowerBound() and r.getUpperBound()
-                    this.setRange(new Range(Math.min(lower, r.getLowerBound()), Math.max(upper, r.getUpperBound())), false, false);
+                    this.setRange(new Range(Math.min(lower, dataRange.getLowerBound()), Math.max(upper, dataRange.getUpperBound())), false, false);
                 }
             }
 
