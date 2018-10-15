@@ -47,6 +47,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
             boolean currentPointVisible = true;
             double transX1 = domainAxis.valueToJava2D(x1, dataArea, plot.getDomainAxisEdge());
+
             double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
             if (!Double.isFinite(transX1) || !Double.isFinite(transY1)) {
                 currentPointVisible = false;
