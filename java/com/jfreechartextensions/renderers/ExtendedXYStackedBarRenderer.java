@@ -57,6 +57,8 @@ public abstract class ExtendedXYStackedBarRenderer extends StackedXYBarRenderer 
                     double var49;
                     if(var47 > 0.0D) {
                         var49 = rangeAxis.valueToJava2D(positiveBase, dataArea, edgeR);
+                        //To prevent log transformation to process 0 as bar base
+                        var49 = Double.isFinite(var49) ? var49 : rangeAxis.valueToJava2D(rangeAxis.getLowerBound(), dataArea, edgeR);
                         translatedValue = rangeAxis.valueToJava2D(positiveBase + var47, dataArea, edgeR);
                     } else {
                         var49 = rangeAxis.valueToJava2D(negativeBase, dataArea, edgeR);
