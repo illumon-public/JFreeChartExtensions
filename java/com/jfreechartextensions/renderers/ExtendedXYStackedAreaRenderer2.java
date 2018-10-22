@@ -29,9 +29,25 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         final XYItemRendererState state = super.initialise(g2, dataArea, plot, data, info);
-        isVisible = new boolean[data.getSeriesCount()][];
-        for (int i = 0; i < data.getSeriesCount(); i++) {
-            isVisible[i] = new boolean[data.getItemCount(i)];
+
+        final int seriesCount = data.getSeriesCount();
+
+        if (isVisible == null) {
+            isVisible = new boolean[seriesCount][];
+        }
+
+        //maintaining the state of isVisible between redrawings
+        for (int i = 0; i < seriesCount; i++) {
+            final int itemCount = data.getItemCount(i);
+            if (isVisible[i] == null) {
+                isVisible[i] = new boolean[itemCount];
+            } else {
+                if (isVisible[i].length < itemCount) {
+                    final boolean[] tempIsVisible = new boolean[itemCount];
+                    System.arraycopy(isVisible[i], 0, tempIsVisible, 0, isVisible[i].length);
+                    isVisible[i] = tempIsVisible;
+                }
+            }
         }
         return state;
     }
@@ -72,7 +88,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
         }
 
         //Render for visible points only
-        if (currentPointVisible) {
+        if (currentPointVisible && series < isVisible.length && item < isVisible[series].length) {
             isVisible[series][item] = true;
 
             double[] stack1 = getStackValues(tdataset, series, item, isVisible);
