@@ -28,7 +28,9 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         XYAreaRendererState state = new XYAreaRendererState(info);
         state.setProcessVisibleItemsOnly(false);
-        isVisible = new int[data.getSeriesCount()];
+        if (isVisible == null) {
+            isVisible = new int[data.getSeriesCount()];
+        }
         return state;
     }
 
@@ -51,7 +53,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
                 currentPointVisible = false;
             }
 
-            if (currentPointVisible) {
+            if (currentPointVisible && series < isVisible.length) {
                 //update the previous visible point for series
                 isVisible[series] = item;
             }
