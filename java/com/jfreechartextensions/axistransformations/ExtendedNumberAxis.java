@@ -20,6 +20,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     private BasicAxisTransform transform;
     private double[] majorTicks;
     private Range dataRange;
+    private final Object dataRangeLock = new Object();
     private double tickAngle = Double.NaN;
     private double minRange = Double.NaN;
     private double maxRange = Double.NaN;
@@ -40,15 +41,17 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     }
 
     public Range getDataRange() {
-        if (dataRange == null) {
-            if (this.getPlot() instanceof ValueAxisPlot) {
-                final ValueAxisPlot vap = (ValueAxisPlot) this.getPlot();
-                dataRange = vap.getDataRange(this);
-            } else {
-                return null;
+        synchronized (dataRangeLock) {
+            if (dataRange == null) {
+                if (this.getPlot() instanceof ValueAxisPlot) {
+                    final ValueAxisPlot vap = (ValueAxisPlot) this.getPlot();
+                    dataRange = vap.getDataRange(this);
+                } else {
+                    return null;
+                }
             }
+            return dataRange;
         }
-        return dataRange;
     }
 
     public void setMajorTicks(final double[] tickLocations) {
@@ -390,29 +393,36 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         if (plot != null) {
             if (plot instanceof ValueAxisPlot) {
                 final ValueAxisPlot vap = (ValueAxisPlot) plot;
-                dataRange = vap.getDataRange(this);
-                if (dataRange == null) {
-                    dataRange = this.getDefaultAutoRange();
+                Range r;
+
+                r = vap.getDataRange(this);
+                if (r == null) {
+                    r = this.getDefaultAutoRange();
                 }
 
                 if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
                     throw new IllegalStateException("shouldn't happen");
                 } else if (!Double.isNaN(minRange)) {
-                    if (minRange > dataRange.getUpperBound()) {
-                        dataRange = new Range(minRange, minRange + 1);
+                    if (minRange > r.getUpperBound()) {
+                        r = new Range(minRange, minRange + 1);
                     } else {
-                        dataRange = new Range(minRange, dataRange.getUpperBound());
+                        r = new Range(minRange, r.getUpperBound());
                     }
                 } else if (!Double.isNaN(maxRange)) {
-                    if (maxRange < dataRange.getLowerBound()) {
-                        dataRange = new Range(maxRange - 1, maxRange);
+                    if (maxRange < r.getLowerBound()) {
+                        r = new Range(maxRange - 1, maxRange);
                     } else {
-                        dataRange = new Range(dataRange.getLowerBound(), maxRange);
+                        r = new Range(r.getLowerBound(), maxRange);
                     }
                 }
 
-                double upper = transform.transform(dataRange.getUpperBound());
-                double lower = transform.transform(dataRange.getLowerBound());
+                double upper = transform.transform(r.getUpperBound());
+                double lower = transform.transform(r.getLowerBound());
+
+                //to minimize the scope of the lock
+                synchronized (dataRangeLock) {
+                    dataRange = r;
+                }
 
                 if (this.getRangeType() == RangeType.POSITIVE) {
                     lower = Math.max(0.0D, lower);
@@ -477,7 +487,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
                 if (!Double.isNaN(upper) && !Double.isNaN(lower)) {
                     //as lower and upper may not include r.getLowerBound() and r.getUpperBound()
-                    this.setRange(new Range(Math.min(lower, dataRange.getLowerBound()), Math.max(upper, dataRange.getUpperBound())), false, false);
+                    this.setRange(new Range(Math.min(lower, r.getLowerBound()), Math.max(upper, r.getUpperBound())), false, false);
                 }
             }
 
