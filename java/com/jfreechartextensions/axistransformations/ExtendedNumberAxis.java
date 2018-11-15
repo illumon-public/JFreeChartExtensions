@@ -23,7 +23,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     private double tickAngle = Double.NaN;
     private double minRange = Double.NaN;
     private double maxRange = Double.NaN;
-    private static final double SMALLEST_DOUBLE = 1E-11;
+    protected static final double SMALLEST_DOUBLE = 1E-11;
 
     public ExtendedNumberAxis(final BasicAxisTransform transform) {
         this.transform = transform;
@@ -49,6 +49,10 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
             }
         }
         return dataRange;
+    }
+
+    protected double[] getMajorTicks() {
+        return majorTicks;
     }
 
     public void setMajorTicks(final double[] tickLocations) {
@@ -203,8 +207,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final Range range = getRange();
 
         //Smallest tick distance could be at either end
-        final double unitHeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
-        final double unitHeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
+        final double unitHeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit1.getSize(), dataArea, edge));
+        final double unitHeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit1.getSize(), dataArea, edge));
         double unitHeight = Math.min(unitHeightLower, unitHeightUpper);
 
         double guess = unit1.getSize();
@@ -214,8 +218,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
-        final double unit2HeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
+        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit2.getSize(), dataArea, edge));
+        final double unit2HeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit2.getSize(), dataArea, edge));
         final double unit2Height = Math.min(unit2HeightLower, unit2HeightUpper);
 
         tickLabelHeight = this.estimateMaximumTickLabelHeight(g2);
@@ -236,8 +240,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final Range range = getRange();
 
         //if transform
-        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
-        final double unit1WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
+        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit1.getSize(), dataArea, edge));
+        final double unit1WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit1.getSize(), dataArea, edge));
         double unit1Width = Math.min(unit1WidthLower, unit1WidthUpper);
         if (Math.abs(unit1Width) < SMALLEST_DOUBLE) {
             unit1Width = SMALLEST_DOUBLE;
@@ -245,8 +249,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final double guess = tickLabelWidth / unit1Width * unit1.getSize();
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
-        final double unit2WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
+        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit2.getSize(), dataArea, edge));
+        final double unit2WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit2.getSize(), dataArea, edge));
         final double unit2Width = Math.min(unit2WidthLower, unit2WidthUpper);
 
         tickLabelWidth = this.estimateMaximumTickLabelWidth(g2, unit2);
@@ -257,7 +261,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         this.setTickUnit(unit2, false, false);
     }
 
-    private void addMinorTicks(final Collection<NumberTick> result, final int nMinorTicks, final double majorTickMin, final double majorTickMax, RectangleEdge edge) {
+    protected void addMinorTicks(final Collection<NumberTick> result, final int nMinorTicks, final double majorTickMin, final double majorTickMax, RectangleEdge edge) {
         final double dx = (majorTickMax - majorTickMin) / nMinorTicks;
 
         for (int i = 1; i < nMinorTicks; ++i) {
@@ -269,7 +273,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         }
     }
 
-    private NumberTick createTick(final TickType tickType, final RectangleEdge edge, final double currentTickValue, final String tickLabel) {
+    protected NumberTick createTick(final TickType tickType, final RectangleEdge edge, final double currentTickValue, final String tickLabel) {
         final boolean isHorizontal = RectangleEdge.isTopOrBottom(edge);
 
         if (isHorizontal) {
@@ -369,12 +373,12 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         }
     }
 
-    private String formatLabel(final double tickValue) {
+    protected String formatLabel(final double tickValue) {
         final NumberFormat formatter = getNumberFormatOverride();
         return formatter == null ? getTickUnit().valueToString(tickValue) : formatter.format(tickValue);
     }
 
-    private boolean okToPlotTick(final double tickValue) {
+    protected boolean okToPlotTick(final double tickValue) {
         return !Double.isNaN(tickValue) && contains(getRange(), tickValue) && transform.isVisible(tickValue);
     }
 
