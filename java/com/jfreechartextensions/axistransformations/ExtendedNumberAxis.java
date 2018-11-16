@@ -98,8 +98,6 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     @Override
     public Range getRange() {
         final Range r = super.getRange();
-//        if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
-//            return new Range(minRange, maxRange);
         if (!Double.isNaN(minRange)) {
             if (minRange > r.getUpperBound()) {
                 return new Range(minRange, minRange + 1);
@@ -396,7 +394,6 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                 }
 
                 if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
-//                    throw new IllegalStateException("shouldn't happen");
                     dataRange = new Range(minRange, maxRange);
                 } else if (!Double.isNaN(minRange)) {
                     if (minRange > dataRange.getUpperBound()) {
