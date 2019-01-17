@@ -210,8 +210,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final Range range = getRange();
 
         //Smallest tick distance could be at either end
-        final double unitHeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit1.getSize(), dataArea, edge));
-        final double unitHeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit1.getSize(), dataArea, edge));
+        final double unitHeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
+        final double unitHeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
         double unitHeight = Math.min(unitHeightLower, unitHeightUpper);
 
         double guess = unit1.getSize();
@@ -221,8 +221,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
 
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit2.getSize(), dataArea, edge));
-        final double unit2HeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit2.getSize(), dataArea, edge));
+        final double unit2HeightUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
+        final double unit2HeightLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
         final double unit2Height = Math.min(unit2HeightLower, unit2HeightUpper);
 
         tickLabelHeight = this.estimateMaximumTickLabelHeight(g2);
@@ -243,8 +243,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final Range range = getRange();
 
         //if transform
-        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit1.getSize(), dataArea, edge));
-        final double unit1WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit1.getSize(), dataArea, edge));
+        final double unit1WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit1.getSize(), dataArea, edge));
+        final double unit1WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit1.getSize(), dataArea, edge));
         double unit1Width = Math.min(unit1WidthLower, unit1WidthUpper);
         if (Math.abs(unit1Width) < SMALLEST_DOUBLE) {
             unit1Width = SMALLEST_DOUBLE;
@@ -252,8 +252,8 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
         final double guess = tickLabelWidth / unit1Width * unit1.getSize();
         NumberTickUnit unit2 = (NumberTickUnit) tickUnits.getCeilingTickUnit(guess);
 
-        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getUpperBound()) - unit2.getSize(), dataArea, edge));
-        final double unit2WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(((long) range.getLowerBound()) + unit2.getSize(), dataArea, edge));
+        final double unit2WidthUpper = Math.abs(this.lengthToJava2D(range.getUpperBound(), dataArea, edge) - this.lengthToJava2D(range.getUpperBound() - unit2.getSize(), dataArea, edge));
+        final double unit2WidthLower = Math.abs(this.lengthToJava2D(range.getLowerBound(), dataArea, edge) - this.lengthToJava2D(range.getLowerBound() + unit2.getSize(), dataArea, edge));
         final double unit2Width = Math.min(unit2WidthLower, unit2WidthUpper);
 
         tickLabelWidth = this.estimateMaximumTickLabelWidth(g2, unit2);
