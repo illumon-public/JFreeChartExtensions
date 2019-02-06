@@ -403,7 +403,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
                 }
 
                 if (!Double.isNaN(minRange) && !Double.isNaN(maxRange)) {
-                    dataRange = new Range(minRange, maxRange);
+                    throw new IllegalStateException("shouldn't happen");
                 } else if (!Double.isNaN(minRange)) {
                     if (minRange > r.getUpperBound()) {
                         r = new Range(minRange, minRange + 1);
