@@ -24,7 +24,7 @@ public abstract class ExtendedXYStackedAreaRenderer extends StackedXYAreaRendere
 
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
-        StackedXYAreaRendererState state = new StackedXYAreaRendererState(info, data);
+        StackedXYAreaRendererState state = new StackedXYAreaRendererState(info);
         state.setProcessVisibleItemsOnly(false);
         return state;
     }
@@ -271,8 +271,8 @@ public abstract class ExtendedXYStackedAreaRenderer extends StackedXYAreaRendere
          *
          * @param info  the plot rendering info.
          */
-        public StackedXYAreaRendererState(PlotRenderingInfo info, XYDataset dataset) {
-            super(info, dataset);
+        public StackedXYAreaRendererState(PlotRenderingInfo info) {
+            super(info);
             this.seriesArea = null;
             this.line = new Line2D.Double();
             this.lastSeriesPoints = new Stack();

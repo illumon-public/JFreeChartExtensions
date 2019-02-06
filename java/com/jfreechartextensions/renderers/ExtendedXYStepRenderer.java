@@ -28,12 +28,10 @@ public class ExtendedXYStepRenderer extends XYStepRenderer {
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         final XYItemRendererState state = super.initialise(g2, dataArea, plot, data, info);
-
-        lastVisibles = new int[state.getDataset().getSeriesCount()];
+        lastVisibles = new int[data.getSeriesCount()];
         for (int i = 0; i < data.getSeriesCount(); i++) {
             lastVisibles[i] = -1;
         }
-
         return state;
     }
 
