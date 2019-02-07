@@ -252,9 +252,11 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
                 }
             }
 
-            int domainAxisIndex2 = plot.getDomainAxisIndex(domainAxis);
-            int rangeAxisIndex2 = plot.getRangeAxisIndex(rangeAxis);
-            this.updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex2, rangeAxisIndex2, transX1, transY1, orientation1);
+            PlotOrientation orientation = plot.getOrientation();
+            int datasetIndex = plot.indexOf(dataset);
+            updateCrosshairValues(crosshairState, x1, y1, datasetIndex,
+                    transX1, transY1, orientation);
+
             EntityCollection entities1 = state.getEntityCollection();
             if (entities1 != null) {
                 this.addEntity(entities1, hotspot, dataset, series, item, 0.0D, 0.0D);
@@ -268,11 +270,22 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
     protected abstract boolean getPlotLines(final int seriesNum);
 
     static class XYAreaRendererState extends XYItemRendererState {
-        public GeneralPath area = new GeneralPath();
-        public Line2D line = new Line2D.Double();
 
-        XYAreaRendererState(PlotRenderingInfo info) {
+        /** Working storage for the area under one series. */
+        public GeneralPath area;
+
+        /** Working line that can be recycled. */
+        public Line2D line;
+
+        /**
+         * Creates a new state.
+         *
+         * @param info  the plot rendering info.
+         */
+        public XYAreaRendererState(PlotRenderingInfo info) {
             super(info);
+            this.area = new GeneralPath();
+            this.line = new Line2D.Double();
         }
     }
 }

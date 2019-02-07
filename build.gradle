@@ -20,7 +20,7 @@ sourceSets {
 // tag::jar[]
 jar {
     baseName = 'jfreechartextensions'
-    version =  '0.1.11'
+    version =  '0.1.12'
 }
 // end::jar[]
 
@@ -28,8 +28,7 @@ jar {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-//def depJFreeChart = 'jfreechart:jfreechart:1.0.19-antialiasing'
-def depJFreeChart = 'org.jfree:jfreechart:1.0.19'
+def depJFreeChart = files("$rootDir/lib/jfreechart/jfreechart-1.0.20.jar")
 def depJFreeCommon = 'org.jfree:jcommon:1.0.23'
 
 dependencies {
