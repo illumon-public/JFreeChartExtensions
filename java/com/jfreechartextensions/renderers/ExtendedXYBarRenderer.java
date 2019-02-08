@@ -147,9 +147,11 @@ public abstract class ExtendedXYBarRenderer extends XYBarRenderer {
                         if (!Double.isFinite(transY1)) {
                             return;
                         }
-                        int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
-                        int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
-                        this.updateCrosshairValues(crosshairState, x11, y1, domainAxisIndex, rangeAxisIndex, transX1, transY1, plot.getOrientation());
+
+                        int datasetIndex = plot.indexOf(dataset);
+                        updateCrosshairValues(crosshairState, x11, y1, datasetIndex,
+                                transX1, transY1, plot.getOrientation());
+
                         EntityCollection entities = state.getEntityCollection();
                         if (entities != null) {
                             this.addEntity(entities, bar1, dataset, series, item, 0.0D, 0.0D);

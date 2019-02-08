@@ -120,9 +120,8 @@ public class ExtendedXYStepRenderer extends XYStepRenderer {
                     }
 
                     // submit this data item as a candidate for the crosshair point
-                    int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
-                    int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);
-                    updateCrosshairValues(crosshairState, x1, y1, domainAxisIndex, rangeAxisIndex, transX1, transY1, orientation);
+                    int datasetIndex = plot.indexOf(dataset);
+                    updateCrosshairValues(crosshairState, x1, y1, datasetIndex, transX1, transY1, orientation);
                 } else {
                     //set current index as last visible index
                     lastVisibles[series] = item;
