@@ -105,6 +105,7 @@ public abstract class ExtendedNumberAxis extends NumberAxis {
     @Override
     public Range getRange() {
         final Range r = super.getRange();
+        //While zoom-in/zoom-out, we don't want the [minRange, maxRange] range, rather we want to have super.getRange()
         if (!Double.isNaN(minRange)) {
             if (minRange > r.getUpperBound()) {
                 return new Range(minRange, minRange + 1);
