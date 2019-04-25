@@ -22,14 +22,19 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
     /**
      * Stores the index of last visible point for every series
      */
-    private int[] isVisible;
+    private int[] lastVisibleIndex;
 
     @Override
     public XYItemRendererState initialise(Graphics2D g2, Rectangle2D dataArea, XYPlot plot, XYDataset data, PlotRenderingInfo info) {
         XYAreaRendererState state = new XYAreaRendererState(info);
         state.setProcessVisibleItemsOnly(false);
-        if (isVisible == null) {
-            isVisible = new int[data.getSeriesCount()];
+
+        final int seriesCount = data.getSeriesCount();
+        lastVisibleIndex = new int[seriesCount];
+
+        //fill every item with -1, which indicates that it hasn't been written yet
+        for (int i = 0; i < seriesCount; i++) {
+            lastVisibleIndex[i] = -1;
         }
         return state;
     }
@@ -37,6 +42,7 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
     @Override
     public void drawItem(Graphics2D g2, XYItemRendererState state, Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot, ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset, int series, int item, CrosshairState crosshairState, int pass) {
         if (this.getItemVisible(series, item)) {
+
             //XYAreaRenderer.XYAreaRendererState areaState = (XYAreaRenderer.XYAreaRendererState)state;
             XYAreaRendererState areaState = (XYAreaRendererState) state;
             double x1 = dataset.getXValue(series, item);
@@ -47,15 +53,14 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
             boolean currentPointVisible = true;
             double transX1 = domainAxis.valueToJava2D(x1, dataArea, plot.getDomainAxisEdge());
-
             double transY1 = rangeAxis.valueToJava2D(y1, dataArea, plot.getRangeAxisEdge());
+
             if (!Double.isFinite(transX1) || !Double.isFinite(transY1)) {
                 currentPointVisible = false;
-            }
-
-            if (currentPointVisible && series < isVisible.length) {
-                //update the previous visible point for series
-                isVisible[series] = item;
+            } else {
+                if(item == 0 || lastVisibleIndex[series] == -1){
+                    lastVisibleIndex[series] = item;
+                }
             }
 
             int itemCount = dataset.getItemCount(series);
@@ -72,9 +77,14 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
             if (!Double.isFinite(transX0) || !Double.isFinite(transY0)) {
                 //find previous visible point
-                previousVisibleIndex = isVisible[series];
+                previousVisibleIndex = lastVisibleIndex[series];
                 transX0 = domainAxis.valueToJava2D(dataset.getXValue(series, previousVisibleIndex), dataArea, plot.getDomainAxisEdge());
                 transY0 = rangeAxis.valueToJava2D(dataset.getYValue(series, previousVisibleIndex), dataArea, plot.getRangeAxisEdge());
+            }
+
+            if (currentPointVisible && series < lastVisibleIndex.length) {
+                //update the previous visible point for series
+                lastVisibleIndex[series] = item;
             }
 
             int nextVisibleIndex = Math.min(item + 1, itemCount - 1);
@@ -271,16 +281,20 @@ public abstract class ExtendedXYAreaRenderer extends XYAreaRenderer {
 
     static class XYAreaRendererState extends XYItemRendererState {
 
-        /** Working storage for the area under one series. */
+        /**
+         * Working storage for the area under one series.
+         */
         public GeneralPath area;
 
-        /** Working line that can be recycled. */
+        /**
+         * Working line that can be recycled.
+         */
         public Line2D line;
 
         /**
          * Creates a new state.
          *
-         * @param info  the plot rendering info.
+         * @param info the plot rendering info.
          */
         public XYAreaRendererState(PlotRenderingInfo info) {
             super(info);

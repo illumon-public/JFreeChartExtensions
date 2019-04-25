@@ -32,22 +32,10 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
 
         final int seriesCount = data.getSeriesCount();
 
-        if (isVisible == null) {
-            isVisible = new boolean[seriesCount][];
-        }
-
-        //maintaining the state of isVisible between redrawings
+        isVisible = new boolean[seriesCount][];
         for (int i = 0; i < seriesCount; i++) {
             final int itemCount = data.getItemCount(i);
-            if (isVisible[i] == null) {
-                isVisible[i] = new boolean[itemCount];
-            } else {
-                if (isVisible[i].length < itemCount) {
-                    final boolean[] tempIsVisible = new boolean[itemCount];
-                    System.arraycopy(isVisible[i], 0, tempIsVisible, 0, isVisible[i].length);
-                    isVisible[i] = tempIsVisible;
-                }
-            }
+            isVisible[i] = new boolean[itemCount];
         }
         return state;
     }
@@ -91,7 +79,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
         if (currentPointVisible && series < isVisible.length && item < isVisible[series].length) {
             isVisible[series][item] = true;
 
-            double[] stack1 = getStackValues(tdataset, series, item, isVisible);
+            double[] stack1 = getStackValues(tdataset, series, item);
 
             // get the previous point and the next point so we can calculate a
             // "hot spot" for the area (used by the chart entity)...
@@ -102,8 +90,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
             double x0 = dataset.getXValue(series, previousVisiblePoint);
             double y0 = dataset.getYValue(series, previousVisiblePoint);
 
-            double[] stack0 = getStackValues(tdataset, series, previousVisiblePoint, isVisible);
-
+            double[] stack0 = getStackValues(tdataset, series, previousVisiblePoint);
             double transX0 = domainAxis.valueToJava2D(x0, dataArea, edge0);
 
             double xMid = (x0 + x1) / 2.0;
@@ -329,7 +316,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
     }
 
     private double[] getStackValues(TableXYDataset dataset,
-                                    int series, int index, boolean[][] isVisible) {
+                                    int series, int index) {
         double[] result = new double[2];
         for (int i = 0; i < series; i++) {
             if (isVisible[series][i]) {
