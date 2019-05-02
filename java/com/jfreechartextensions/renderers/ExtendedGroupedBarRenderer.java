@@ -26,7 +26,7 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
         this.seriesToGroupMap = map;
     }
 
-    public void getSeriesToGroupMap() {
+    public KeyToGroupMap getSeriesToGroupMap() {
         return seriesToGroupMap;
     }
 
