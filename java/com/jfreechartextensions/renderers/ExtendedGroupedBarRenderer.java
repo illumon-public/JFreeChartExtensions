@@ -26,6 +26,10 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
         this.seriesToGroupMap = map;
     }
 
+    public KeyToGroupMap getSeriesToGroupMap() {
+        return seriesToGroupMap;
+    }
+
     public void drawItem(Graphics2D g2, CategoryItemRendererState state, Rectangle2D dataArea, CategoryPlot plot, CategoryAxis domainAxis, ValueAxis rangeAxis, CategoryDataset dataset, int row, int column, int pass) {
         Number dataValue = dataset.getValue(row, column);
         if(dataValue != null) {
