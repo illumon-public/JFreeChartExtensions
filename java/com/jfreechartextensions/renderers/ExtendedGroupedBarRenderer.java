@@ -48,7 +48,7 @@ public abstract class ExtendedGroupedBarRenderer extends GroupedStackedBarRender
 
             double translatedValue;
             for(int translatedBase = 0; translatedBase < row; ++translatedBase) {
-                if(group.equals(this.seriesToGroupMap.getGroup(dataset.getRowKey(translatedBase)))) {
+                if(group.equals(this.seriesToGroupMap.getGroup(dataset.getRowKey(translatedBase))) && this.isSeriesVisible(translatedBase)) {
                     Number v = dataset.getValue(translatedBase, column);
                     if(v != null) {
                         translatedValue = v.doubleValue();
