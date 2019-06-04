@@ -319,7 +319,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
                                     int series, int index) {
         double[] result = new double[2];
         for (int i = 0; i < series; i++) {
-            if (isVisible[series][i]) {
+            if (isVisible[series][i] && isSeriesVisible(i)) {
                 double v = dataset.getYValue(i, index);
                 if (!Double.isNaN(v)) {
                     if (v >= 0.0) {
@@ -349,10 +349,12 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
     }
 
     private int findPreviousVisiblePoint(final int series, final int index) {
-        final boolean[] visibles = isVisible[series];
-        for (int i = index - 1; i >= 0; i--) {
-            if (visibles[i]) {
-                return i;
+        if(isSeriesVisible(series)) {
+            final boolean[] visibles = isVisible[series];
+            for (int i = index - 1; i >= 0; i--) {
+                if (visibles[i]) {
+                    return i;
+                }
             }
         }
         return -1;
