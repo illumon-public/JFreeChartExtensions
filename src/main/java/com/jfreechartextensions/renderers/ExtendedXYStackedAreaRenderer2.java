@@ -319,7 +319,7 @@ public class ExtendedXYStackedAreaRenderer2 extends StackedXYAreaRenderer2 {
                                     int series, int index) {
         double[] result = new double[2];
         for (int i = 0; i < series; i++) {
-            if (isVisible[series][i] && isSeriesVisible(i)) {
+            if (isVisible[series][index] && isSeriesVisible(i)) {
                 double v = dataset.getYValue(i, index);
                 if (!Double.isNaN(v)) {
                     if (v >= 0.0) {

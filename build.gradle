@@ -1,30 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'maven-publish'
 
-// tag::repositories[]
 repositories {
     mavenCentral()
 }
-// end::repositories[]
 
-// tag::sourceSets[]
-sourceSets {
-    main {
-        java {
-            srcDir 'java'
-        }
-    }
-}
-// end::sourceSets[]
+version =  '0.1.17'
+group = 'io.deephaven.thirdparty'
 
-version =  '0.1.16'
-// tag::jar[]
-jar {
-    baseName = 'jfreechartextensions'
-}
-// end::jar[]
-
-// tag::dependencies[]
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -35,7 +19,11 @@ dependencies {
     compile depJFreeChart, depJFreeCommon
     testCompile depJFreeChart, depJFreeCommon
 }
-// end::dependencies[]
 
-// tag::wrapper[]
-// end::wrapper[]
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
