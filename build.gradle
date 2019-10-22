@@ -6,7 +6,7 @@ repositories {
     mavenCentral()
 }
 
-version =  '0.1.17X'
+version =  '0.1.17'
 group = 'io.deephaven.thirdparty'
 
 sourceCompatibility = 1.8
