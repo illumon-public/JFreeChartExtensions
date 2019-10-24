@@ -222,20 +222,13 @@ public abstract class ExtendedXYStackedAreaRenderer extends StackedXYAreaRendere
                     Area dataAreaHotspot = new Area(shape);
                     dataAreaHotspot.intersect(new Area(dataArea));
                     if (!dataAreaHotspot.isEmpty()) {
-                        String tip = null;
-                        XYToolTipGenerator generator = getToolTipGenerator(
-                                series, item);
-                        if (generator != null) {
-                            tip = generator.generateToolTip(dataset, series,
-                                    item);
-                        }
                         String url = null;
                         if (getURLGenerator() != null) {
                             url = getURLGenerator().generateURL(dataset, series,
                                     item);
                         }
                         XYItemEntity entity = new XYItemEntity(dataAreaHotspot,
-                                dataset, series, item, tip, url);
+                                dataset, series, item, getToolTipGenerator(series, item), url);
                         entities.add(entity);
                     }
                 }
